@@ -8,8 +8,13 @@ const http_1 = __importDefault(require("http"));
 const cors_1 = __importDefault(require("cors"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const morgan_1 = __importDefault(require("morgan"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    credentials: true,
+    origin: "http://localhost:3000",
+}));
+app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.json());
 app.use((0, morgan_1.default)("dev"));
 app.use("/api/v1/auth", auth_1.default);
