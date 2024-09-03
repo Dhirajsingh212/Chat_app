@@ -34,10 +34,14 @@ const page = () => {
         toast.warning("Fields cannot be empty.");
         return;
       }
-      await axios.post(`${BASE_URL}auth/signup`, {
-        username: formData.username,
-        password: formData.password,
-      });
+      await axios.post(
+        `${BASE_URL}auth/signup`,
+        {
+          username: formData.username,
+          password: formData.password,
+        },
+        { withCredentials: true }
+      );
       toast.success("LoggedIn.");
       setUserState(true);
     } catch (err) {

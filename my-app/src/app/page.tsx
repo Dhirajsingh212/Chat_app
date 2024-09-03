@@ -34,10 +34,14 @@ export default function page() {
         toast.warning("Fields cannot be empty.");
         return;
       }
-      await axios.post(`${BASE_URL}auth/login`, {
-        username: formData.username,
-        password: formData.password,
-      });
+      await axios.post(
+        `${BASE_URL}auth/login`,
+        {
+          username: formData.username,
+          password: formData.password,
+        },
+        { withCredentials: true }
+      );
       toast.success("Signed up.");
       setUserState(true);
     } catch (err) {

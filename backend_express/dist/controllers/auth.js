@@ -36,13 +36,12 @@ function LoginFunction(req, res) {
                 });
             }
             const token = (0, utils_1.genToken)(user === null || user === void 0 ? void 0 : user.id, user === null || user === void 0 ? void 0 : user.username);
-            return res
-                .cookie("access_token", token, {
+            res.cookie("access_token", token, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-            })
-                .status(200)
-                .json({
+                sameSite: "none",
+                secure: true,
+            });
+            return res.status(200).json({
                 success: true,
                 message: "successfull",
             });
@@ -71,7 +70,8 @@ function SignupFunction(req, res) {
             return res
                 .cookie("access_token", token, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
+                sameSite: "none",
+                secure: true,
             })
                 .status(200)
                 .json({

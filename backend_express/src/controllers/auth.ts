@@ -26,16 +26,16 @@ export async function LoginFunction(req: any, res: any) {
     }
 
     const token = genToken(user?.id, user?.username);
-    return res
-      .cookie("access_token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-      })
-      .status(200)
-      .json({
-        success: true,
-        message: "successfull",
-      });
+    res.cookie("access_token", token, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "successfull",
+    });
   } catch (err) {
     console.log(err);
     return res.status(500).json({
@@ -61,7 +61,8 @@ export async function SignupFunction(req: any, res: any) {
     return res
       .cookie("access_token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        sameSite: "none",
+        secure: true,
       })
       .status(200)
       .json({
