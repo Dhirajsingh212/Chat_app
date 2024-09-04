@@ -5,15 +5,29 @@ import Users from "@/components/Users";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { BASE_URL } from "../../config";
+import { useRecoilValue, useRecoilValueLoadable } from "recoil";
+import { userState } from "@/atoms";
+import { redirect } from "next/navigation";
+import { toast } from "sonner";
 
 function App() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [allUsers, setAllUsers] = useState([]);
   const [latestMsg, setLatestMsg] = useState<string[]>([]);
 
+  const getUserValue = useRecoilValueLoadable(userState);
+
+  if (
+    getUserValue.state === "hasValue" &&
+    getUserValue.contents === (undefined || null)
+  ) {
+    redirect("/");
+  }
+
   useEffect(() => {
     const newSocket = new WebSocket("ws://localhost:8080");
     newSocket.onopen = () => {
+      toast.success("connection established.");
       setSocket(newSocket);
     };
     newSocket.onmessage = (message) => {

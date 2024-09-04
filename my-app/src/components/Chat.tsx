@@ -110,24 +110,24 @@ const Chat = ({
               {Number(parsedData.fromId) === Number(value) ? (
                 <div
                   key={index}
-                  className={`flex max-w-[400px] flex-col gap-2 rounded-lg px-4 py-2 text-sm ml-auto ${
+                  className={` flex max-w-[400px] flex-col gap-2 rounded-lg px-4 py-2 text-sm ml-auto ${
                     theme === "dark"
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-green-600 text-white"
                       : "bg-primary text-primary-foreground"
                   }`}
                 >
-                  {parsedData.msg} 🙏
+                  <p className="text-wrap break-words">{parsedData.msg} 🙏</p>
                 </div>
               ) : (
                 Number(parsedData.fromId) === Number(id[0]) && (
                   <div
-                    className={`flex max-w-[400px] flex-col gap-2 rounded-lg px-4 py-2 text-sm ${
+                    className={`flex max-w-[400px] flex-col gap-2 rounded-lg px-4 py-2 text-sm mr-auto ${
                       theme === "dark"
                         ? "bg-slate-950 text-foreground"
                         : "bg-muted text-foreground"
                     }`}
                   >
-                    {parsedData.msg} ☕
+                    <p className="text-wrap break-words">{parsedData.msg} ☕</p>
                   </div>
                 )
               )}

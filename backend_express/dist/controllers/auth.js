@@ -11,6 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoginFunction = LoginFunction;
 exports.SignupFunction = SignupFunction;
+exports.GetAllUsers = GetAllUsers;
+exports.GetSingleUser = GetSingleUser;
 const db_1 = require("../db/db");
 const utils_1 = require("../utils");
 function LoginFunction(req, res) {
@@ -44,6 +46,7 @@ function LoginFunction(req, res) {
             return res.status(200).json({
                 success: true,
                 message: "successfull",
+                id: user.id,
             });
         }
         catch (err) {
@@ -77,6 +80,61 @@ function SignupFunction(req, res) {
                 .json({
                 success: true,
                 message: "successfull",
+                id: newUser.id,
+            });
+        }
+        catch (err) {
+            console.log(err);
+            return res.status(500).json({
+                success: false,
+                message: "Internal server error",
+            });
+        }
+    });
+}
+function GetAllUsers(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const allUser = yield db_1.prisma.user.findMany({
+                where: {
+                    id: {
+                        not: req.body.userId,
+                    },
+                },
+                select: {
+                    id: true,
+                    username: true,
+                },
+            });
+            return res.status(200).json({
+                success: true,
+                allUser,
+            });
+        }
+        catch (err) {
+            console.log(err);
+            return res.status(500).json({
+                success: false,
+            });
+        }
+    });
+}
+function GetSingleUser(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const id = req.params.id;
+            const user = yield db_1.prisma.user.findFirst({
+                where: {
+                    id: Number(id),
+                },
+                select: {
+                    id: true,
+                    username: true,
+                },
+            });
+            return res.status(200).json({
+                success: true,
+                user,
             });
         }
         catch (err) {

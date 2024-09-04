@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { PlusIcon } from "@/lib/svgs";
 import { useTheme } from "next-themes";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface User {
   id: number;
@@ -12,6 +13,7 @@ interface User {
 
 export default function Users({ allUsers }: { allUsers: User[] }) {
   const { theme } = useTheme();
+  const router = useRouter();
   return (
     <div
       className={`grid grid-cols-1 md:grid-cols-[300px_1fr] max-w-6xl w-full mx-auto h-screen rounded-lg overflow-hidden border ${
@@ -27,7 +29,14 @@ export default function Users({ allUsers }: { allUsers: User[] }) {
       >
         <div className="flex items-center justify-between">
           <div className="font-medium text-sm">Chats</div>
-          <Button variant="ghost" size="icon" className="rounded-full">
+          <Button
+            onClick={() => {
+              router.push("/signup");
+            }}
+            variant="ghost"
+            size="icon"
+            className="rounded-full"
+          >
             <PlusIcon
               className={`h-4 w-4 ${
                 theme === "dark" ? "text-foreground" : "text-muted-foreground"
@@ -49,7 +58,7 @@ export default function Users({ allUsers }: { allUsers: User[] }) {
         <div className="flex flex-col gap-2 overflow-y-scroll h-[520px] no-scrollbar">
           {allUsers.map((element: User, index: number) => {
             return (
-              <div>
+              <div key={index}>
                 <Link
                   href={`/chatpage/${element.id}`}
                   className={`flex items-center gap-4 p-2 rounded-lg hover:bg-muted/50 ${

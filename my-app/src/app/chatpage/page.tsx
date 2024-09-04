@@ -3,9 +3,17 @@ import Users from "@/components/Users";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { BASE_URL } from "../config";
+import { useRecoilValue } from "recoil";
+import { userState } from "@/atoms";
+import { redirect } from "next/navigation";
 
 function page() {
   const [allUsers, setAllUsers] = useState([]);
+  const getUserValue = useRecoilValue(userState);
+
+  if (!getUserValue) {
+    redirect("/");
+  }
 
   useEffect(() => {
     axios
