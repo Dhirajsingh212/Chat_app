@@ -1,15 +1,17 @@
 "use client";
+import { userState } from "@/atoms";
+import Spinner from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { setItem } from "@/localStorage";
 import axios from "axios";
 import Link from "next/link";
 import React, { useState } from "react";
+import { useSetRecoilState } from "recoil";
 import { toast } from "sonner";
 import { BASE_URL } from "./config";
-import Spinner from "@/components/Spinner";
-import { useSetRecoilState } from "recoil";
-import { userState } from "@/atoms";
+import { useRouter } from "next/navigation";
 
 interface SignIn {
   username: string;
@@ -23,7 +25,7 @@ export default function page() {
   });
 
   const setUserState = useSetRecoilState(userState);
-
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -42,10 +44,10 @@ export default function page() {
         },
         { withCredentials: true }
       );
-      toast.success("Signed up.");
-
-      localStorage.setItem("id", (res.data as any).id);
+      toast.success("Logged In.");
+      setItem("id", res.data.id);
       setUserState((res.data as any).id);
+      router.push("/chatpage");
     } catch (err) {
       console.log(err);
       toast.error("something went wrong.");
@@ -78,6 +80,7 @@ export default function page() {
                   value={formData.username}
                   type="text"
                   placeholder="John Doe"
+                  className="dark:bg-slate-950"
                 />
               </div>
               <div className="space-y-2">
@@ -92,6 +95,7 @@ export default function page() {
                   }}
                   type="password"
                   placeholder="********"
+                  className="dark:bg-slate-950"
                 />
               </div>
               <Button disabled={isLoading} type="submit" className="w-full">
@@ -99,7 +103,7 @@ export default function page() {
               </Button>
             </form>
             <div className="text-center text-sm">
-              Don\'t have an account?{" "}
+              Don\'t have an account?
               <Link
                 href="/signup"
                 className="text-primary hover:underline"
@@ -112,70 +116,5 @@ export default function page() {
         </div>
       </main>
     </div>
-  );
-}
-
-function MoonIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-    </svg>
-  );
-}
-
-function MountainIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m8 3 4 8 5-5 5 15H2L8 3z" />
-    </svg>
-  );
-}
-
-function SunIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 2v2" />
-      <path d="M12 20v2" />
-      <path d="m4.93 4.93 1.41 1.41" />
-      <path d="m17.66 17.66 1.41 1.41" />
-      <path d="M2 12h2" />
-      <path d="M20 12h2" />
-      <path d="m6.34 17.66-1.41 1.41" />
-      <path d="m19.07 4.93-1.41 1.41" />
-    </svg>
   );
 }

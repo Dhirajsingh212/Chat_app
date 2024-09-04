@@ -51,7 +51,6 @@ wss.on("connection", function connection(ws, request: Request) {
 
   try {
     const decoded = verifyToken(accessToken);
-    console.log(decoded);
     addClient({ ws, id: (decoded as any).id });
 
     ws.on("message", function message(data, isBinary) {

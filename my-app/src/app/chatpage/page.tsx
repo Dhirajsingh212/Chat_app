@@ -4,25 +4,18 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { BASE_URL } from "../config";
 
-function App() {
-  const [socket, setSocket] = useState<WebSocket | null>(null);
+function page() {
   const [allUsers, setAllUsers] = useState([]);
 
   useEffect(() => {
-    const newSocket = new WebSocket("ws://localhost:8080");
-    newSocket.onopen = () => {
-      console.log("Connection established");
-      setSocket(newSocket);
-    };
-    newSocket.onmessage = (message) => {
-      console.log("Message received:", message.data);
-    };
     axios
       .get(`${BASE_URL}auth/getUsers`, { withCredentials: true })
       .then((res) => {
         setAllUsers(res.data.allUser);
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    return () => newSocket.close();
   }, []);
 
   return (
@@ -40,20 +33,8 @@ function App() {
           </p>
         </div>
       </div>
-      {/* <Button
-        className="bg-blue-500 p-4 rounded-lg"
-        onClick={() => {
-          const message = {
-            text: "hello from text to newUser",
-            id: 3,
-          };
-          socket?.send(JSON.stringify(message));
-        }}
-      >
-        Send
-      </Button> */}
     </div>
   );
 }
 
-export default App;
+export default page;

@@ -14,11 +14,9 @@ function App() {
   useEffect(() => {
     const newSocket = new WebSocket("ws://localhost:8080");
     newSocket.onopen = () => {
-      console.log("Connection established");
       setSocket(newSocket);
     };
     newSocket.onmessage = (message) => {
-      console.log("Message received:", message.data);
       setLatestMsg((prev: string[]) => {
         return [...prev, message.data];
       });
@@ -47,18 +45,6 @@ function App() {
       <div className="w-full bg-gray-200 dark:bg-slate-800">
         <Chat messages={latestMsg} socket={socket} />
       </div>
-      {/* <Button
-        className="bg-blue-500 p-4 rounded-lg"
-        onClick={() => {
-          const message = {
-            text: "hello from text to newUser",
-            id: 2,
-          };
-          socket?.send(JSON.stringify(message));
-        }}
-      >
-        Send
-      </Button> */}
     </div>
   );
 }

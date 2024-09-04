@@ -1,15 +1,17 @@
 "use client";
+import { userState } from "@/atoms";
+import Spinner from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { setItem } from "@/localStorage";
 import axios from "axios";
 import Link from "next/link";
 import { useState } from "react";
+import { useSetRecoilState } from "recoil";
 import { toast } from "sonner";
 import { BASE_URL } from "../config";
-import Spinner from "@/components/Spinner";
-import { useSetRecoilState } from "recoil";
-import { userState } from "@/atoms";
+import { useRouter } from "next/navigation";
 
 interface SignUp {
   username: string;
@@ -23,7 +25,7 @@ const page = () => {
   });
 
   const setUserState = useSetRecoilState(userState);
-
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -42,9 +44,10 @@ const page = () => {
         },
         { withCredentials: true }
       );
-      toast.success("LoggedIn.");
-      localStorage.setItem("id", (res.data as any).id);
+      toast.success("Signed Up.");
+      setItem("id", res.data.id);
       setUserState((res.data as any).id);
+      router.push("/chatpage");
     } catch (err) {
       console.log(err);
       toast.error("something went wrong.");
@@ -80,6 +83,7 @@ const page = () => {
                   id="name"
                   type="text"
                   placeholder="John Doe"
+                  className="dark:bg-slate-950"
                 />
               </div>
               <div className="space-y-2">
@@ -97,6 +101,7 @@ const page = () => {
                   }}
                   type="password"
                   placeholder="*********"
+                  className="dark:bg-slate-950"
                 />
               </div>
               <Button disabled={isLoading} type="submit" className="w-full">
