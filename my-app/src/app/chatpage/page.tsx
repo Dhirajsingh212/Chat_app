@@ -1,10 +1,8 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import Users from "@/components/Users";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { BASE_URL } from "../config";
-import Users from "@/components/Users";
-import Chat from "@/components/Chat";
 
 function App() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -19,9 +17,11 @@ function App() {
     newSocket.onmessage = (message) => {
       console.log("Message received:", message.data);
     };
-    axios.get(`${BASE_URL}getUsers`).then((res) => {
-      setAllUsers(res.data.allUser);
-    });
+    axios
+      .get(`${BASE_URL}auth/getUsers`, { withCredentials: true })
+      .then((res) => {
+        setAllUsers(res.data.allUser);
+      });
     return () => newSocket.close();
   }, []);
 

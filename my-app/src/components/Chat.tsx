@@ -1,24 +1,64 @@
 "use client";
 
+import { BASE_URL } from "@/app/config";
+import { userState } from "@/atoms";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import axios from "axios";
 import { useTheme } from "next-themes";
-import { ThemeToggleButton } from "./ThemeToggleButton";
 import { useParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useRecoilState } from "recoil";
+import ChatFormElement from "./ChatFormElement";
 import Spinner from "./Spinner";
+import { ThemeToggleButton } from "./ThemeToggleButton";
 
-const Chat = () => {
+interface User {
+  id: number;
+  username: string;
+}
+
+const Chat = ({
+  messages,
+  socket,
+}: {
+  messages: string[];
+  socket: WebSocket | null;
+}) => {
   const { theme } = useTheme();
+  const { id } = useParams();
+  const [text, setText] = useState<string>("");
+  const [value, setValue] = useRecoilState(userState);
 
-  if (!theme) {
+  if (!theme || !id[0]) {
     return (
       <div className="flex h-screen w-full justify-center items-center">
         <Spinner />
       </div>
     );
   }
-  const { id } = useParams();
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const [user, setUser] = useState<User>();
+
+  useEffect(() => {
+    axios
+      .get(`${BASE_URL}auth/getSingleUser/${id[0]}`, { withCredentials: true })
+      .then((res: any) => {
+        setUser(res.data.user);
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  }, [id[0]]);
+
+  console.log("rendered");
 
   return (
     <div className="h-screen ">
@@ -34,15 +74,17 @@ const Chat = () => {
             }`}
           >
             <AvatarImage src="/placeholder-user.jpg" alt="Image" />
-            <AvatarFallback>OM</AvatarFallback>
+            <AvatarFallback>
+              {(user?.username && user.username[0].toUpperCase() + "U") || "AU"}
+            </AvatarFallback>
           </Avatar>
           <div className="grid gap-0.5">
             <p
-              className={`text-sm font-medium leading-none ${
+              className={`text-sm font-medium leading-none capitalize ${
                 theme === "dark" ? "text-foreground" : "text-foreground"
               }`}
             >
-              Sofia Davis
+              {user?.username}
             </p>
             <p
               className={`text-xs ${
@@ -61,123 +103,53 @@ const Chat = () => {
         </div>
       </div>
 
-      <div className="grid gap-4 p-4 md:p-4 max-h-[520px] overflow-y-scroll no-scrollbar">
-        <div
-          className={`flex w-max max-w-[65%] flex-col gap-2 rounded-full px-4 py-2 text-sm ml-auto ${
-            theme === "dark"
-              ? "bg-primary text-primary-foreground"
-              : "bg-primary text-primary-foreground"
-          }`}
-        >
-          Hey, are you free this weekend? We should catch up! 🙏
-        </div>
-        <div
-          className={`flex w-max max-w-[65%] flex-col gap-2 rounded-full px-4 py-2 text-sm ${
-            theme === "dark"
-              ? "bg-slate-950 text-foreground"
-              : "bg-muted text-foreground"
-          }`}
-        >
-          Sure, I'm available on Saturday. Let's grab coffee! ☕
-        </div>
-        <div
-          className={`flex w-max max-w-[65%] flex-col gap-2 rounded-xl overflow-hidden text-sm ml-auto ${
-            theme === "dark"
-              ? "bg-muted text-foreground"
-              : "bg-background text-foreground"
-          }`}
-        >
-          <img
-            src="https://platform.polygon.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/14808952/tumblr_lmwsamrrxT1qagx30.0.0.1488208493.gif?quality=90&strip=all&crop=0%2C4.2124542124542%2C100%2C91.575091575092&w=750"
-            alt="photo"
-            width={200}
-            height={150}
-            className="object-cover"
-            style={{ aspectRatio: "200/150", objectFit: "cover" }}
-          />
-        </div>
-        <div
-          className={`flex w-max max-w-[65%] flex-col gap-2 rounded-full px-4 py-2 text-sm ml-auto ${
-            theme === "dark"
-              ? "bg-primary text-primary-foreground"
-              : "bg-primary text-primary-foreground"
-          }`}
-        >
-          Sounds good! Let's meet at the Starbucks on 5th Ave.
-        </div>
-        <div
-          className={`flex w-max max-w-[65%] flex-col gap-2 rounded-full px-4 py-2 text-sm ml-auto ${
-            theme === "dark"
-              ? "bg-primary text-primary-foreground"
-              : "bg-primary text-primary-foreground"
-          }`}
-        >
-          Sounds good! Let's meet at the Starbucks on 5th Ave.
-        </div>{" "}
-        <div
-          className={`flex w-max max-w-[65%] flex-col gap-2 rounded-full px-4 py-2 text-sm ml-auto ${
-            theme === "dark"
-              ? "bg-primary text-primary-foreground"
-              : "bg-primary text-primary-foreground"
-          }`}
-        >
-          Sounds good! Let's meet at the Starbucks on 5th Ave.
-        </div>{" "}
-        <div
-          className={`flex w-max max-w-[65%] flex-col gap-2 rounded-full px-4 py-2 text-sm ml-auto ${
-            theme === "dark"
-              ? "bg-primary text-primary-foreground"
-              : "bg-primary text-primary-foreground"
-          }`}
-        >
-          Sounds good! Let's meet at the Starbucks on 5th Ave.
-        </div>{" "}
-        <div
-          className={`flex w-max max-w-[65%] flex-col gap-2 rounded-full px-4 py-2 text-sm ml-auto ${
-            theme === "dark"
-              ? "bg-primary text-primary-foreground"
-              : "bg-primary text-primary-foreground"
-          }`}
-        >
-          Sounds good! Let's meet at the Starbucks on 5th Ave.
-        </div>
-        <div
-          className={`flex w-max max-w-[65%] flex-col gap-2 rounded-full px-4 py-2 text-sm ${
-            theme === "dark"
-              ? "bg-slate-950 text-foreground"
-              : "bg-muted text-foreground"
-          }`}
-        >
-          I'll message you on Saturday.
-        </div>
+      <div
+        ref={containerRef}
+        className="flex flex-col gap-4 p-4 md:p-4 h-[520px] overflow-y-scroll no-scrollbar "
+      >
+        {messages.map((element: string, index) => {
+          const parsedData = JSON.parse(element || "");
+          return (
+            <>
+              {Number(parsedData.fromId) === Number(value) ? (
+                <div
+                  key={index}
+                  className={`flex w-max max-w-[65%] flex-col gap-2 rounded-full px-4 py-2 text-sm ml-auto ${
+                    theme === "dark"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-primary text-primary-foreground"
+                  }`}
+                >
+                  {parsedData.msg} 🙏
+                </div>
+              ) : (
+                Number(parsedData.fromId) === Number(id[0]) && (
+                  <div
+                    className={`flex w-max max-w-[65%] flex-col gap-2 rounded-full px-4 py-2 text-sm ${
+                      theme === "dark"
+                        ? "bg-slate-950 text-foreground"
+                        : "bg-muted text-foreground"
+                    }`}
+                  >
+                    {parsedData.msg} ☕
+                  </div>
+                )
+              )}
+            </>
+          );
+        })}
       </div>
       <div
         className={`border-t ${
           theme === "dark" ? "border-muted" : "border-muted"
         }`}
       >
-        <form className="flex w-full items-center space-x-2 p-4">
-          <Input
-            id="message"
-            placeholder="Type your message..."
-            className={`flex-1 ${
-              theme === "dark"
-                ? "bg-dark text-foreground"
-                : "bg-background text-foreground"
-            }`}
-            autoComplete="off"
-          />
-          <Button
-            type="submit"
-            size="icon"
-            className={`${
-              theme === "dark" ? "text-black" : "text-muted-foreground"
-            }`}
-          >
-            <span className="sr-only">Send</span>
-            <SendIcon className="h-4 w-4" />
-          </Button>
-        </form>
+        <ChatFormElement
+          id={id[0] || ""}
+          text={text}
+          setText={setText}
+          socket={socket}
+        />
       </div>
     </div>
   );

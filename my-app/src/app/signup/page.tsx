@@ -34,7 +34,7 @@ const page = () => {
         toast.warning("Fields cannot be empty.");
         return;
       }
-      await axios.post(
+      const res = await axios.post(
         `${BASE_URL}auth/signup`,
         {
           username: formData.username,
@@ -43,7 +43,8 @@ const page = () => {
         { withCredentials: true }
       );
       toast.success("LoggedIn.");
-      setUserState(true);
+      localStorage.setItem("id", (res.data as any).id);
+      setUserState((res.data as any).id);
     } catch (err) {
       console.log(err);
       toast.error("something went wrong.");

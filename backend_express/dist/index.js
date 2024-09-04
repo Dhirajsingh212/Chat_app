@@ -52,7 +52,12 @@ app.get("/api/v1/getUsers", (req, res) => __awaiter(void 0, void 0, void 0, func
 }));
 const server = http_1.default.createServer(app);
 const wss = new ws_1.WebSocketServer({ server: server });
-let clients = [];
+// Create a Map to store objects by their id
+let clientsMap = new Map();
+// Function to add a client to the Map
+function addClient(client) {
+    clientsMap.set(client.id, client); // This will update the client if the id already exists
+}
 wss.on("connection", function connection(ws, request) {
     ws.on("error", console.error);
     const token = request.headers.cookie;
@@ -65,12 +70,12 @@ wss.on("connection", function connection(ws, request) {
     try {
         const decoded = (0, utils_1.verifyToken)(accessToken);
         console.log(decoded);
-        clients.push({ ws, id: decoded.id });
+        addClient({ ws, id: decoded.id });
         ws.on("message", function message(data, isBinary) {
-            clients.forEach(function each(client) {
+            clientsMap.forEach(function each(client) {
                 const parsedData = JSON.parse(data.toString("utf-8"));
-                console.log(client);
-                if (client.ws !== ws && client.ws.readyState === WebSocket.OPEN) {
+                if ((client.id === parsedData.id || client.id === decoded.id) &&
+                    client.ws.readyState === WebSocket.OPEN) {
                     client.ws.send(data, { binary: isBinary });
                 }
             });

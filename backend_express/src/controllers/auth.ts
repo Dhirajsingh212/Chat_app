@@ -35,6 +35,7 @@ export async function LoginFunction(req: any, res: any) {
     return res.status(200).json({
       success: true,
       message: "successfull",
+      id: user.id,
     });
   } catch (err) {
     console.log(err);
@@ -68,7 +69,58 @@ export async function SignupFunction(req: any, res: any) {
       .json({
         success: true,
         message: "successfull",
+        id: newUser.id,
       });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+}
+
+export async function GetAllUsers(req: any, res: any) {
+  try {
+    const allUser = await prisma.user.findMany({
+      where: {
+        id: {
+          not: req.body.userId,
+        },
+      },
+      select: {
+        id: true,
+        username: true,
+      },
+    });
+    return res.status(200).json({
+      success: true,
+      allUser,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+    });
+  }
+}
+
+export async function GetSingleUser(req: any, res: any) {
+  try {
+    const id = req.params.id;
+    const user = await prisma.user.findFirst({
+      where: {
+        id: Number(id),
+      },
+      select: {
+        id: true,
+        username: true,
+      },
+    });
+    return res.status(200).json({
+      success: true,
+      user,
+    });
   } catch (err) {
     console.log(err);
     return res.status(500).json({
