@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+
+  server:
+    build: ./backend_express
+    container_name: backend_express
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/mydb2?schema=public
+      - SECRET=asguyfsRYTGUIB23456789
+      - END=30d
+      - NODE_ENV=development
+      - PORT=8080
+    volumes:
+      - ./backend_express:/server
+
+  client:
+    build: ./my-app
+    container_name: my-app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+    volumes:
+      - ./my-app:/app
+
+volumes:
+  db:

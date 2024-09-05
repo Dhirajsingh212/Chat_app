@@ -31,14 +31,6 @@ const Chat = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [user, setUser] = useState<User>();
 
-  if (!theme || !id[0]) {
-    return (
-      <div className="flex h-screen w-full justify-center items-center">
-        <Spinner />
-      </div>
-    );
-  }
-
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
@@ -55,6 +47,14 @@ const Chat = ({
         console.log(err);
       });
   }, [id[0]]);
+
+  if (!theme || !id[0]) {
+    return (
+      <div className="flex h-screen w-full justify-center items-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen ">
@@ -105,6 +105,7 @@ const Chat = ({
       >
         {messages.map((element: string, index: number) => {
           const parsedData = JSON.parse(element || "");
+
           return (
             <>
               {Number(parsedData.fromId) === Number(value) ? (
@@ -121,6 +122,7 @@ const Chat = ({
               ) : (
                 Number(parsedData.fromId) === Number(id[0]) && (
                   <div
+                    key={index}
                     className={`flex max-w-[400px] flex-col gap-2 rounded-lg px-4 py-2 text-sm mr-auto ${
                       theme === "dark"
                         ? "bg-slate-950 text-foreground"

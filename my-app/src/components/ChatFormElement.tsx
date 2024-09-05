@@ -24,7 +24,7 @@ const ChatFormElement = ({
         socket?.send(
           JSON.stringify({
             msg: text,
-            id: Number(id[0]),
+            toId: Number(id[0]),
           })
         );
         setText("");

@@ -1,17 +1,21 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import dotenv from "dotenv";
 import express from "express";
 import http from "http";
 import morgan from "morgan";
-import { WebSocketServer } from "ws";
+import { WebSocket, WebSocketServer } from "ws";
 import authRoutes from "./routes/auth";
-import { verifyToken } from "./utils";
+import socketRoutes from "./routes/socket";
+import { saveToDB, verifyToken } from "./utils";
 
 const app = express();
 
+dotenv.config();
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.ORIGIN,
     credentials: true,
   })
 );
@@ -19,7 +23,12 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(morgan("dev"));
 
+app.get("/", (req, res) => {
+  res.send("Work fine");
+});
+
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/messages", socketRoutes);
 
 const server = http.createServer(app);
 
@@ -54,13 +63,21 @@ wss.on("connection", function connection(ws, request: Request) {
     addClient({ ws, id: (decoded as any).id });
 
     ws.on("message", function message(data, isBinary) {
-      clientsMap.forEach(function each(client: any) {
+      clientsMap.forEach(async function each(client: any) {
         const parsedData = JSON.parse(data.toString("utf-8"));
         parsedData.fromId = (decoded as any).id;
         if (
-          (client.id === parsedData.id || client.id === (decoded as any).id) &&
-          client.ws.readyState === WebSocket.OPEN
+          (client.id === parsedData.toId ||
+            client.id === (decoded as any).id) &&
+          client.ws.readyState == WebSocket.OPEN
         ) {
+          if (client.id === (decoded as any).id) {
+            await saveToDB({
+              message: parsedData.msg,
+              toId: Number(parsedData.toId),
+              fromId: Number(parsedData.fromId),
+            });
+          }
           client.ws.send(JSON.stringify(parsedData), { binary: isBinary });
         }
       });
@@ -70,6 +87,6 @@ wss.on("connection", function connection(ws, request: Request) {
   }
 });
 
-server.listen(8080, function () {
-  console.log("Listening on http://localhost:8080");
+server.listen(process.env.PORT, function () {
+  console.log(`Listening on ${process.env.PORT}`);
 });

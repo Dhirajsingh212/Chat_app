@@ -1,13 +1,13 @@
 "use client";
+import { userState } from "@/atoms";
 import Users from "@/components/Users";
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { BASE_URL } from "../config";
-import { useRecoilValue } from "recoil";
-import { userState } from "@/atoms";
 import { redirect } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
+import { BASE_URL } from "../config";
 
-function page() {
+function Page() {
   const [allUsers, setAllUsers] = useState([]);
   const getUserValue = useRecoilValue(userState);
 
@@ -45,4 +45,4 @@ function page() {
   );
 }
 
-export default page;
+export default Page;

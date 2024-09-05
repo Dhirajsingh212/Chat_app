@@ -18,7 +18,7 @@ interface SignUp {
   password: string;
 }
 
-const page = () => {
+const Page = () => {
   const [formData, setFormData] = useState<SignUp>({
     username: "",
     password: "",
@@ -125,4 +125,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

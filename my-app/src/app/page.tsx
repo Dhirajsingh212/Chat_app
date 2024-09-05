@@ -18,7 +18,7 @@ interface SignIn {
   password: string;
 }
 
-export default function page() {
+export default function Page() {
   const [formData, setFormData] = useState<SignIn>({
     username: "",
     password: "",
@@ -103,7 +103,7 @@ export default function page() {
               </Button>
             </form>
             <div className="text-center text-sm">
-              Don\'t have an account?
+              Dont have an account?
               <Link
                 href="/signup"
                 className="text-primary hover:underline"
