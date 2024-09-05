@@ -13,8 +13,8 @@ services:
       - db:/var/lib/postgresql/data
 
   server:
-    build: ./backend_express
-    container_name: backend_express
+    build: ./server
+    container_name: server
     ports:
       - "8080:8080"
     depends_on:
@@ -27,17 +27,17 @@ services:
       - NODE_ENV=development
       - PORT=8080
     volumes:
-      - ./backend_express:/server
+      - ./server:/server
 
   client:
-    build: ./my-app
-    container_name: my-app
+    build: ./client
+    container_name: client
     ports:
       - "3000:3000"
     depends_on:
       - server
     volumes:
-      - ./my-app:/app
+      - ./client:/app
 
 volumes:
   db:

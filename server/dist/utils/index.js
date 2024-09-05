@@ -16,8 +16,10 @@ exports.genToken = genToken;
 exports.verifyToken = verifyToken;
 exports.hashPassword = hashPassword;
 exports.verifyHashedPassword = verifyHashedPassword;
+exports.saveToDB = saveToDB;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const db_1 = require("../db/db");
 function genToken(id, username) {
     return jsonwebtoken_1.default.sign({ id, username }, process.env.SECRET, {
         expiresIn: process.env.END,
@@ -40,5 +42,23 @@ function verifyHashedPassword(password, dbpassword) {
             return true;
         }
         return false;
+    });
+}
+function saveToDB(_a) {
+    return __awaiter(this, arguments, void 0, function* ({ message, toId, fromId, }) {
+        try {
+            yield db_1.prisma.messages.create({
+                data: {
+                    msg: message,
+                    toId: Number(toId),
+                    fromId: Number(fromId),
+                },
+            });
+            console.log("saved");
+            return true;
+        }
+        catch (err) {
+            return false;
+        }
     });
 }
